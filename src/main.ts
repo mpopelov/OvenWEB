@@ -2,7 +2,9 @@ import { createApp, reactive } from 'vue'
 import App from './App.vue'
 
 /**
- * Controller program step
+ * Class representing controller program step.
+ * Each step of a program is defined by its duration along with desired temperatures
+ * at start and end of the step.
  */
 export class clPGMStep{
     tStart: number;
@@ -18,7 +20,8 @@ export class clPGMStep{
 }
 
 /**
- * Controller program
+ * Class representing controller program.
+ * A human readable name and at least one step are mandatory.
  */
 export class clProgram{
     Name: string;
@@ -36,6 +39,67 @@ export class clProgram{
     }
   }
 }
+
+/**
+ * Class representing controller configuration in JSON format
+ * - TFT  : TFT screen calibration data.
+ * - WiFi : Details for connecting to WiFi (SSID and KEY)
+ * - PID : PID-control coeffitients
+ * - Programs : an array of programs available for controller
+ */
+class clControllerConfiguration{
+  TFT? : {
+    tft1: number;
+    tft2: number;
+  };
+
+  WiFi? : {
+    SSID : string;
+    KEY : string;
+  };
+
+  PID? : {
+    KP : number;
+    KI : number;
+    KD : number;
+  };
+
+  Programs? : clProgram[];
+
+}
+
+/**
+ * Class representing current controller status.
+ * Reported by controller via WebSocket.
+ */
+class clControllerStatus{
+  tProbe        : number = 0;
+  tAmbient      : number = 0;
+  tStep         : number = 0;
+  isRunning     : boolean = false;
+  statusText    : string = "";
+  activeProgram : clProgram | null = null;
+  activeStep    : number = 0;
+  timeElapsed   : number = 0;
+}
+
+class clMsgRequest{
+  id    : 'cfgRD' | 'cfgWR' | 'start' | 'stop' = 'cfgRD';
+  msg?  : clControllerConfiguration;
+}
+
+class clMsgResponse{
+  id      : 'OK' | 'ERR' | 'status' = 'OK';
+  details?: string;
+  config? : clControllerConfiguration;
+  status? : clControllerStatus;
+}
+
+
+
+
+
+
 
 /** represents a set of programs to run that are available in controller memory */
 var ControllerPrograms = [
@@ -84,6 +148,7 @@ export const Controller = reactive({
       ControllerPrograms = programs;
     }
   });
+
 
   /**
    * Create a detached copy of serializable object
