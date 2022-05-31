@@ -1,0 +1,99 @@
+/* color definitions */
+:root {
+  --v-c-indigo: #2c3e50;
+  --v-c-white: #f8f8f8;
+  --v-c-black: #282828;
+  --v-c-shadow: rgba(60, 60, 60, 0.7);
+}
+
+/* semantic color variables */
+:root {
+  --c-page-bg: var(--v-c-white);
+  --c-page-text: var(--v-c-black);
+  --c-page-shadow: var(--v-c-black);
+
+  --c-tft-bg: var(--v-c-indigo);
+  --c-tft-text: var(--v-c-white);
+  --c-tft-shadow: var(--v-c-shadow);
+}
+
+body {
+  color: var(--c-page-text);
+  background: var(--c-page-bg);
+  line-height: normal;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/**
+  common style for controls mirroring TFT display:
+  - 320 x 240 pixels
+  - indigo background
+  - centered in the containing box
+  - with slightly rounded corners and shadow around
+*/
+.tft{
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-self: center;
+  align-self: flex-start;
+  min-width: 320px;
+  max-width: 320px;
+  min-height: 240px;
+  max-height: 240px;
+  padding: 0px;
+  border: 0px;
+  border-radius: 3px;
+  margin: 0px;
+
+  box-shadow: 3px 3px 3px var(--c-tft-shadow);
+
+  background-color: var(--c-tft-bg);
+  color: var(--c-tft-text);
+}
+
+/* common for tft buttons */
+.tftbtn{
+  color: var(--c-tft-text);
+  font-weight: bold;
+  border: none;
+  border-radius: 3px;
+  text-align: center;
+}
+.tftbtn:active{
+  box-shadow: inset 3px 3px 3px var(--c-tft-shadow);
+}
+.tftbtn40px{
+  width: 40px;
+  height: 40px;
+}
+
+/* common for editing buttons */
+.edtbtn{
+  width: fit-content;
+  min-width: 18px;
+  height: fit-content;
+  min-height: 18px;
+
+  margin: 1px;
+  padding: 1px;
+  border: 0px;
+  border-radius: 2px;
+
+  color: var(--c-page-text);
+  font-weight: bold;
+  background-color: var(--c-page-bg);
+  text-align: center;
+  vertical-align: middle;
+  
+}
+.edtbtn:active{
+  box-shadow: inset 2px 2px 2px var(--c-page-shadow);
+}
+.edtbtn:disabled{
+  visibility: hidden;
+}
