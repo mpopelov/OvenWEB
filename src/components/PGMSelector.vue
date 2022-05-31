@@ -214,13 +214,13 @@ function onSaveToController(){
 <style>
 .tftpgm{
   display: grid;
-  grid-template-columns: 280px 40px;
+  grid-template-columns: 250px 70px;
   padding: 0px;
 }
 
 table.pgmtbl{
-    width: 275px;
-    margin-left: 5px;
+    width: 250px;
+    margin-left: 0px;
     border-collapse: collapse;
 }
 table.pgmtbl tbody{
@@ -233,7 +233,7 @@ table.pgmtbl td{
 }
 
 .current{
-  background-color: rgba(0, 255, 234, 0.349);
+  background-color: rgb(61, 131, 125);
 }
 .editing{
   background-color: brown;

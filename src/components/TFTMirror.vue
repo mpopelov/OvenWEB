@@ -39,7 +39,7 @@ function onPgmSelect() {
 <style>
 .tftmain{
   display: grid;
-  grid-template-columns: 280px 40px;
+  grid-template-columns: 250px 70px;
 }
 
 .displ {
