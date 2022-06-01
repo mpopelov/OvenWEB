@@ -62,8 +62,4 @@ onUnmounted(() => {
 
 <style>
 @import './assets/base.css';
-
-div[id="app"]{
-  color: var(--c-page-text);
-}
 </style>

@@ -16,29 +16,49 @@
  *  "edit"                       - is emitted on entering edit mode to notify parent
  *  "save"                       - is emitted upon clicking Save button to inform parent of user committing changes
  *  "cancel"                     - is emitted upon clicking Cancel button to inform parent of user discarding changes
+ *  "delete"                     - is emitted upon clicking Delete button to inform parent of user intention to delete program
  * 
  */
 
 import {ref, computed} from 'vue'
 import {clProgram, clPGMStep} from '../main'
 
+/**
+ * Properties exposed by component:
+ * - program: a program to show/edit
+ * - inEdit: whether editing is allowed
+ */
 const props = defineProps<{
     program: clProgram
     inEdit: Boolean
 }>()
 
+/**
+ * Events emitted by component:
+ * - edit: enter current program editing mode
+ * - save: save changes to current program requested
+ * - cancel: discard changes to current program requested
+ * - delete: request to delete current program
+ */
+const emit = defineEmits(['edit','save','cancel','delete'])
 
-const emit = defineEmits(['edit','save', 'cancel'])
-
+/**
+ * Current component state: showing/editing.
+ */
 var inEditMode = ref(props.inEdit); // default false
 
-// curProgram is computed to keep track of when parent controller changes the property
-// it also resets the inEditMode
+/**
+ * curProgram is computed to keep track of when parent controller changes the property.
+ * It also resets the inEditMode.
+ */
 const curProgram = computed( () => {
     inEditMode.value = props.inEdit;
     return props.program;
     } )
 
+/**
+ * Enter editing mode or save changes done.
+ */
 function onEditSave(){
     if(inEditMode.value){
         emit('save'); // emit save event so parent can save possible changes
@@ -48,31 +68,48 @@ function onEditSave(){
     inEditMode.value = !inEditMode.value;
 }
 
+/**
+ * Cancel any changes.
+ */
 function onCancel(){
     emit('cancel'); // emit cancel event to notify parent to discard any changes
     inEditMode.value = false;
 }
 
+/**
+ * Delete program
+ */
+function onDelete(){
+    emit('delete');
+    inEditMode.value = false;
+}
+
+/**
+ * Insert program step at a given index.
+ * @param idx index to insert at. If idx < 0 - insert element at the end of the array
+ */
 function onStepInsert(idx = -1){
-    // insert program step at a given index.
-    // if idx < 0 - insert element at the end of the array
     // make sure index is within boundaries
     let index = ( idx < 0 ? curProgram.value.steps.length : (idx > curProgram.value.steps.length ? curProgram.value.steps.length : idx) )
     curProgram.value.steps.splice( index, 0, new clPGMStep() );
 }
 
+/**
+ * Remove program step.
+ * @param idx index of step to remove
+ */
 function onStepDelete(idx = -1){
-    // remove program step
     // add sanity check and do nothing if index is beyond boundaries
     let index = (idx >= curProgram.value.steps.length ? -1 : idx)
     if( index >= 0) curProgram.value.steps.splice( index, 1 ); // remove element only if index is valid
 }
 
+/**
+ * Move step up/down one position reordering steps in the program
+ * @param idx index of step to move
+ * @param moveup whether to move step up or down
+ */
 function onStepMove(idx = -1, moveup = true){
-    // moving step up/down one position reordering steps in the array
-    // idx: an index of the step to move
-    // moveup: whether to move step up or down
-    
     // sanity check so we attempt move on existing steps only
     let index = (idx >= curProgram.value.steps.length ? -1 : idx)
     if(index < 0) return; // no action on out of bound items
@@ -93,9 +130,14 @@ function onStepMove(idx = -1, moveup = true){
 </script>
 
 <template>
-    <div class="pgmeditor">
+    <div class="tftexp pgmeditor">
         <section>
-            <header><h1 style="margin: 0px;">Program: <input type="text" :disabled="!inEditMode" v-model="curProgram.Name" /></h1></header>
+            <header>
+              <h1>Program: 
+                <input type="text" :disabled="!inEditMode" v-model="curProgram.Name" />
+                <button class="alert edtbtn" :disabled="!inEditMode" id="delpgm" @click="onDelete">Delete</button>
+              </h1>
+            </header>
             <table>
               <thead>
                 <tr>
@@ -107,9 +149,9 @@ function onStepMove(idx = -1, moveup = true){
               </thead>
               <tbody>
                 <tr v-for="(step,index) in curProgram.steps">
-                    <td><input type="text" :disabled="!inEditMode" v-model.number="step.tStart" /></td>
-                    <td><input type="text" :disabled="!inEditMode" v-model.number="step.tEnd" /></td>
-                    <td><input type="text" :disabled="!inEditMode" v-model.number="step.duration" /></td>
+                    <td><input type="number" :disabled="!inEditMode" v-model.number="step.tStart" /></td>
+                    <td><input type="number" :disabled="!inEditMode" v-model.number="step.tEnd" /></td>
+                    <td><input type="number" :disabled="!inEditMode" v-model.number="step.duration" /></td>
                     <td>
                         <button class="edtbtn" :disabled="!inEditMode" id="insbefore" @click="onStepInsert(index)">&uArr;</button>
                         <button class="edtbtn" :disabled="!inEditMode" id="moveup" @click="onStepMove(index, true)">&uarr;</button>
@@ -143,12 +185,13 @@ function onStepMove(idx = -1, moveup = true){
     width: fit-content;
     position: relative;
     justify-self: center;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 10px;
-    padding: 1px;
+    padding: 5px;
     border: none;
     border-radius: 3px;
     box-shadow: 3px 3px 3px var(--c-tft-shadow);
+}
+
+.alert{
+    background-color: red !important;
 }
 </style>

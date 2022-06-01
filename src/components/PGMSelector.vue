@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { ref, onUpdated } from 'vue';
+import { ref } from 'vue';
 import { Controller, clProgram, detach } from '../main';
 import PGMEditor from './PGMEditor.vue';
 
 const msgSaveChanges = "Please save your changes first.";
 
-const idxSelected = ref(-1); // track currently selected program
+const idxSelected = ref(-1); // track currently selected program; -1 == nothing selected; -2 == new program;
 const inEditMode = ref(false); // track editing status as emitted from child PGMEditor component
-const isNewProgram = ref(false); // flag to indicate a new program is added and edited
 
 // get a disconnected copy of programs to be able to edit safely
 //var Programs = ref(JSON.parse(JSON.stringify(Controller.GetPrograms())));
@@ -22,13 +21,8 @@ function highlightClass(index : number){
 
 // refresh disconnected object of currently selected program
 function refreshCurProgram(){
-    curProgram.value = idxSelected.value == -1 ? {} : detach(Programs.value[idxSelected.value]);
+    curProgram.value = idxSelected.value >= 0 ? detach(Programs.value[idxSelected.value]) : new clProgram();
 }
-
-onUpdated(() => {
-    // if the new program was added it might need to be scrolled into visible area
-    if(isNewProgram.value) document.getElementById('prg'+idxSelected.value)?.scrollIntoView(false);
-})
 
 function onEmitEdit(){
     // just enter editing mode and notice editing was initiated
@@ -38,31 +32,43 @@ function onEmitEdit(){
 function onEmitCancel(refresh = true){
     // discard any changes potentially made by user into a program and refresh current disconnected copy of program object
     inEditMode.value = false;
-    if(isNewProgram.value){
-        // cancel was called on editing newly created program
-        isNewProgram.value = false;
-        idxSelected.value = -1; // reset selection
-        Programs.value.pop(); // remove added program from array
-    }
+    // if new program was being edited - discard it
+    if(idxSelected.value <= 0) idxSelected.value = -1; // reset selection
     if(refresh) refreshCurProgram();
 }
 
 function onEmitSave(refresh = true){
     // save changes made by user and again create disconnected copy for further editing
-    Programs.value[idxSelected.value] = curProgram.value;
-    inEditMode.value = false;
-    isNewProgram.value = false; // program not new anymore :)
+    if(idxSelected.value == -2){
+        // push new program value to an array and make it selected
+        idxSelected.value =  Programs.value.push(curProgram.value) - 1;
+    }else{
+        // update existing program
+        Programs.value[idxSelected.value] = curProgram.value;
+    }
+    inEditMode.value = false; // reset edit flag
     if(refresh) refreshCurProgram();
+}
+
+function onEmitDelete(){
+    // delete seletcted program / dismiss new program creation
+    inEditMode.value = false;
+    // sanity check - only delete currently selected valid program
+    if(idxSelected.value >= 0 && idxSelected.value < Programs.value.length){
+        Programs.value.splice(idxSelected.value, 1);
+        idxSelected.value = -1; // reset currently selected program
+        refreshCurProgram();
+    }
 }
 
 function onOk(){
     // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
     /* set new program only in case a valid index was selected */
-    if(idxSelected.value == -1){
+    if(idxSelected.value <= 0){
         Controller.program = null;
         Controller.isRunning = false;
         Controller.status = "Active program reset.";
@@ -78,7 +84,7 @@ function onOk(){
 
 function onCancel(){
     // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
@@ -90,33 +96,29 @@ function onCancel(){
 
 function onUp(){
     // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
     // verify that we stay within boundaries
     idxSelected.value = (idxSelected.value <= 0 ? 0 : idxSelected.value - 1);
     refreshCurProgram();
-    // scroll to selected item so it is visible
-    document.getElementById('prg'+idxSelected.value)?.scrollIntoView(true);
 }
 
 function onDown(){
     // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
     // verify that we stay within boundaries
     idxSelected.value = (idxSelected.value == Programs.value.length - 1 ? idxSelected.value : idxSelected.value + 1);
     refreshCurProgram();
-    // scroll selected element into view
-    document.getElementById('prg'+idxSelected.value)?.scrollIntoView(false);
 }
 
 function onToggle(index: number){
     // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
@@ -127,36 +129,20 @@ function onToggle(index: number){
 }
 
 function onProgramAdd(){
-    // check that we are not editing a new program already
-    if(isNewProgram.value){
+    // check that we are not editing any program
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
-    // add a new program to controller configuration at the end of current list
-    Programs.value.push(new clProgram());
-    // set focus to the new program and refresh
-    idxSelected.value = Programs.value.length - 1;
+    // set current program to a new empty instance
+    curProgram.value = new clProgram();
+    idxSelected.value = -2;
     inEditMode.value = true;
-    isNewProgram.value = true;
-    refreshCurProgram();
-}
-
-function onProgramDelete(index: number){
-    // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
-        window.alert(msgSaveChanges);
-        return;
-    }
-    // delete a progam from controller configuration
-
-    // sanity check
-    if(index < 0 || index >= Programs.value.length) return; // do nothing on index out of bound
-    Programs.value.splice(index, 1);
 }
 
 function onSaveToController(){
     // check taht we are not in edit mode / new program
-    if(isNewProgram.value || inEditMode.value){
+    if(inEditMode.value){
         window.alert(msgSaveChanges);
         return;
     }
@@ -184,9 +170,9 @@ function onSaveToController(){
                v-for="(item,index) in Programs"
                :id="`prg${index}`"
                @click="onToggle(index)"
-               :class="[highlightClass(index)]">
+               :class="highlightClass(index)">
                 <td style="width: 95%;"><label>{{index}} - {{item.Name}}</label></td>
-                <td><button id="del" class="edtbtn" @click.stop="onProgramDelete(index)">&otimes;</button></td>
+                <td></td>
               </tr>
             </tbody>
             <tfoot>
@@ -206,7 +192,14 @@ function onSaveToController(){
             <button id="btnDn" class="tftbtn tftbtn40px current" @click="onDown">DN</button>
         </div>
     </div>
-    <PGMEditor v-if="idxSelected != -1" :program="curProgram" :inEdit="isNewProgram" @edit="onEmitEdit" @cancel="onEmitCancel" @save="onEmitSave"></PGMEditor>
+    <PGMEditor v-if="idxSelected != -1"
+               :program="curProgram"
+               :inEdit="idxSelected == -2"
+               @edit="onEmitEdit"
+               @cancel="onEmitCancel"
+               @save="onEmitSave"
+               @delete="onEmitDelete">
+    </PGMEditor>
 </template>
 
 

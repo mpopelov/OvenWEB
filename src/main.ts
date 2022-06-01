@@ -152,10 +152,10 @@ export const Controller = reactive({
 
   /**
    * Create a detached copy of serializable object
-   * @param {any} obj an object to create detached copy
+   * @param obj an object to create detached copy
    * @returns a detached copy of object supplied
    */
-export function detach(obj : any){
+export function detach<Type>(obj : Type) : Type{
   return JSON.parse(JSON.stringify(obj));
 }
 
