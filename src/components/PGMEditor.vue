@@ -138,7 +138,7 @@ function onStepMove(idx = -1, moveup = true){
             <button class="alert edtbtn" :disabled="!inEditMode" id="delpgm" @click="onDelete">Delete</button>
         </div>
         <div class="pgmstep" v-for="(step,index) in curProgram.steps">
-            <div class="pgmstepno">Step #</div>
+            <div class="pgmstepno">Step {{index}}</div>
             <div class="pgmstepdetails">
                 <fieldset class="fset">
                     <legend>start T&deg;</legend>
@@ -153,7 +153,7 @@ function onStepMove(idx = -1, moveup = true){
                     <input type="number" :disabled="!inEditMode" v-model.number="step.duration" />
                 </fieldset>
             </div>
-            <div>
+            <div class="pgmactions">
                 <fieldset class="fset">
                     <legend>Actions</legend>
                     <button class="edtbtn" :disabled="!inEditMode" id="insbefore" @click="onStepInsert(index)">&uArr;</button>
@@ -196,7 +196,7 @@ function onStepMove(idx = -1, moveup = true){
 
 .pgmstep{
     display: grid;
-    grid-template-columns: 20px minmax(min-content,610px) minmax(min-content,150px);
+    grid-template-columns: 20px minmax(min-content,610px) minmax(min-content,180px);
     column-gap: 2px;
     height: min-content;
     border-bottom-style: unset;
@@ -226,10 +226,15 @@ function onStepMove(idx = -1, moveup = true){
     row-gap: 2px;
 }
 
+.pgmactions{
+    width: minmax(40px, min-content);
+}
+
 .fset{
     padding-left: 1px;
     padding-right: 1px;
     padding-bottom: 1px;
+    border-radius: 3px;
 }
 
 .alert{

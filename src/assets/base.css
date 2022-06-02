@@ -99,12 +99,12 @@ div[id="app"]{
 /* common for editing buttons */
 .edtbtn{
   width: fit-content;
-  min-width: 18px;
+  min-width: 30px;
   height: fit-content;
-  min-height: 18px;
+  min-height: 30px;
 
   margin: 1px;
-  padding: 1px;
+  padding: 5px;
   border: 0px;
   border-radius: 2px;
 

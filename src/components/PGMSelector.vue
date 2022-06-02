@@ -56,9 +56,9 @@ function onEmitDelete(){
     // sanity check - only delete currently selected valid program
     if(idxSelected.value >= 0 && idxSelected.value < Programs.value.length){
         Programs.value.splice(idxSelected.value, 1);
-        idxSelected.value = -1; // reset currently selected program
-        refreshCurProgram();
     }
+    idxSelected.value = -1; // reset currently selected program
+    refreshCurProgram();
 }
 
 function onOk(){
