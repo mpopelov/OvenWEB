@@ -125,6 +125,12 @@ export const Controller = reactive({
     isRunning: false,
     program: null as clProgram | null,
 
+    intervalId: -1,
+
+    onTimer(obj: any){
+      obj.tempProbe++;
+    },
+
     // handle start/stop commands from GUI
     onStartStop(){
       if(this.program === null){
@@ -132,10 +138,13 @@ export const Controller = reactive({
         return;
       }
 
+      if(this.isRunning){
+        clearInterval(this.intervalId);
+      }else{
+        this.intervalId = setInterval( this.onTimer, 1000, this); 
+      }
       // toggle running state
       this.isRunning = !this.isRunning;
-      // for now just increase the probe temperature - TODO: send command to controller
-      this.tempProbe++;
       this.status = this.isRunning ? "Program is running" : "Program stopped";
     },
 

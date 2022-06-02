@@ -68,7 +68,7 @@ function onOk(){
         return;
     }
     /* set new program only in case a valid index was selected */
-    if(idxSelected.value <= 0){
+    if(idxSelected.value < 0){
         Controller.program = null;
         Controller.isRunning = false;
         Controller.status = "Active program reset.";
