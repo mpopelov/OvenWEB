@@ -131,50 +131,49 @@ function onStepMove(idx = -1, moveup = true){
 
 <template>
     <div class="tftexp pgmeditor">
-        <section>
-            <header>
-              <h1>Program: 
+        <div>
+            <label class="lblpgm">Program:
                 <input type="text" :disabled="!inEditMode" v-model="curProgram.Name" />
-                <button class="alert edtbtn" :disabled="!inEditMode" id="delpgm" @click="onDelete">Delete</button>
-              </h1>
-            </header>
-            <table>
-              <thead>
-                <tr>
-                    <th>start T&deg;</th>
-                    <th>end T&deg;</th>
-                    <th>duration</th>
-                    <th>actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(step,index) in curProgram.steps">
-                    <td><input type="number" :disabled="!inEditMode" v-model.number="step.tStart" /></td>
-                    <td><input type="number" :disabled="!inEditMode" v-model.number="step.tEnd" /></td>
-                    <td><input type="number" :disabled="!inEditMode" v-model.number="step.duration" /></td>
-                    <td>
-                        <button class="edtbtn" :disabled="!inEditMode" id="insbefore" @click="onStepInsert(index)">&uArr;</button>
-                        <button class="edtbtn" :disabled="!inEditMode" id="moveup" @click="onStepMove(index, true)">&uarr;</button>
-                        <button class="edtbtn" :disabled="!inEditMode" id="del" @click="onStepDelete(index)">&otimes;</button>
-                        <button class="edtbtn" :disabled="!inEditMode" id="movedn" @click="onStepMove(index, false)">&darr;</button>
-                        <button class="edtbtn" :disabled="!inEditMode" id="insafter" @click="onStepInsert(index + 1)">&dArr;</button>
-                    </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><button class="edtbtn" :disabled="!inEditMode" id="addStep" @click="onStepInsert(-1)">+</button></td>
-                </tr>
-              </tfoot>
-            </table>
-            <footer>
-                <button class="edtbtn" @click="onEditSave">{{inEditMode ? "Save" : "Edit"}}</button>
-                <button v-if="inEditMode" class="edtbtn" @click="onCancel">Cancel</button>
-            </footer>
-        </section>
+            </label>
+            <button class="alert edtbtn" :disabled="!inEditMode" id="delpgm" @click="onDelete">Delete</button>
+        </div>
+        <div class="pgmstep" v-for="(step,index) in curProgram.steps">
+            <div class="pgmstepno">Step #</div>
+            <div class="pgmstepdetails">
+                <fieldset class="fset">
+                    <legend>start T&deg;</legend>
+                    <input type="number" :disabled="!inEditMode" v-model.number="step.tStart" />
+                </fieldset>
+                <fieldset class="fset">
+                    <legend>end T&deg;</legend>
+                    <input type="number" :disabled="!inEditMode" v-model.number="step.tEnd" />
+                </fieldset>
+                <fieldset class="fset">
+                    <legend>duration</legend>
+                    <input type="number" :disabled="!inEditMode" v-model.number="step.duration" />
+                </fieldset>
+            </div>
+            <div>
+                <fieldset class="fset">
+                    <legend>Actions</legend>
+                    <button class="edtbtn" :disabled="!inEditMode" id="insbefore" @click="onStepInsert(index)">&uArr;</button>
+                    <button class="edtbtn" :disabled="!inEditMode" id="moveup" @click="onStepMove(index, true)">&uarr;</button>
+                    <button class="edtbtn" :disabled="!inEditMode" id="del" @click="onStepDelete(index)">&otimes;</button>
+                    <button class="edtbtn" :disabled="!inEditMode" id="movedn" @click="onStepMove(index, false)">&darr;</button>
+                    <button class="edtbtn" :disabled="!inEditMode" id="insafter" @click="onStepInsert(index + 1)">&dArr;</button>
+                </fieldset>
+            </div>
+        </div>
+
+
+
+
+        
+        <div>
+            <button class="edtbtn" @click="onEditSave">{{inEditMode ? "Save" : "Edit"}}</button>
+            <button v-if="inEditMode" class="edtbtn" @click="onCancel">Cancel</button>
+            <button class="edtbtn" :disabled="!inEditMode" id="addStep" @click="onStepInsert(-1)">Add step</button>
+        </div>
     </div>
 </template>
 
@@ -182,16 +181,63 @@ function onStepMove(idx = -1, moveup = true){
 .pgmeditor{
     color: var(--c-tft-text);
     background-color: var(--c-tft-bg);
-    width: fit-content;
     position: relative;
+    width:fit-content;
     justify-self: center;
     padding: 5px;
     border: none;
     border-radius: 3px;
     box-shadow: 3px 3px 3px var(--c-tft-shadow);
+
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 5px;
+}
+
+.pgmstep{
+    display: grid;
+    grid-template-columns: 20px minmax(min-content,610px) minmax(min-content,150px);
+    column-gap: 2px;
+    height: min-content;
+    border-bottom-style: unset;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: antiquewhite;
+    padding: 2px;
+}
+
+.pgmstepno{
+    -ms-writing-mode: tb-rl;
+    -webkit-writing-mode: vertical-rl;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    width: min-content;
+    height: min-content;
+    align-self: center;
+}
+
+.pgmstepdetails{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min-content, 200px));
+    column-gap: 2px;
+    row-gap: 2px;
+}
+
+.fset{
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-bottom: 1px;
 }
 
 .alert{
     background-color: red !important;
+}
+
+.lblpgm{
+    font-weight: bold;
+    font-size: large;
 }
 </style>

@@ -33,7 +33,7 @@ function onEmitCancel(refresh = true){
     // discard any changes potentially made by user into a program and refresh current disconnected copy of program object
     inEditMode.value = false;
     // if new program was being edited - discard it
-    if(idxSelected.value <= 0) idxSelected.value = -1; // reset selection
+    if(idxSelected.value < 0) idxSelected.value = -1; // reset selection
     if(refresh) refreshCurProgram();
 }
 
