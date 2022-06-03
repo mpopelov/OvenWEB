@@ -10,27 +10,27 @@ function onPgmSelect() {
     <div id="tftmirror" class="tft tftmain">
 
       <div id="mainscreen" class="displ">
-        <p><span>Program: </span><span>{{Controller.program === null ? "no prog selected" : Controller.program.Name}}</span></p>
+        <p><span>Program: </span><span>{{Controller._cStatus.activeProgram === null ? "no prog selected" : Controller._cStatus.activeProgram.Name}}</span></p>
         <p>
             <span>Step: </span>
             <span>--</span>
             <span> of </span>
-            <span>{{Controller.program === null ? "--" : Controller.program.steps.length}}</span></p>
-        <p><span>{{Controller.tempProbe}} &deg;C</span></p>
+            <span>{{Controller._cStatus.activeProgram === null ? "--" : Controller._cStatus.activeProgram.steps.length}}</span></p>
+        <p><span>{{Controller._cStatus.tProbe}} &deg;C</span></p>
       </div>
 
       <div id="buttons" class="btns">
         <button id="pgm" class="tftbtn tftbtn40px pgm" @click="onPgmSelect">PGM</button>
         <button 
           id="toggle"
-          :class="['tftbtn', 'tftbtn40px', Controller.isRunning ? 'started' : 'stopped']"
+          :class="['tftbtn', 'tftbtn40px', Controller._cStatus.isRunning ? 'started' : 'stopped']"
           @click="Controller.onStartStop()"
-        >{{Controller.isRunning ? "Stop" : "Start"}}
+        >{{Controller._cStatus.isRunning ? "Stop" : "Start"}}
         </button>
       </div>
 
       <div id="status" class="stts">
-        <p id="status">{{Controller.status}}</p>
+        <p id="status">{{Controller._cStatus.statusText}}</p>
       </div>
 
     </div>

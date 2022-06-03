@@ -1,4 +1,5 @@
-import { createApp, reactive } from 'vue'
+import { createApp, reactive, ref } from 'vue'
+import type { Ref } from 'vue'
 import App from './App.vue'
 
 /**
@@ -41,27 +42,27 @@ export class clProgram{
 }
 
 /**
- * Class representing controller configuration in JSON format
+ * Class representing complete controller configuration in JSON format
  * - TFT  : TFT screen calibration data.
  * - WiFi : Details for connecting to WiFi (SSID and KEY)
  * - PID : PID-control coeffitients
  * - Programs : an array of programs available for controller
  */
-class clControllerConfiguration{
+class clCConfiguration{
   TFT? : {
-    tft1: number;
-    tft2: number;
+    tft1    : number;
+    tft2    : number;
   };
 
   WiFi? : {
-    SSID : string;
-    KEY : string;
+    SSID    : string;
+    KEY     : string;
   };
 
   PID? : {
-    KP : number;
-    KI : number;
-    KD : number;
+    KP      : number;
+    KI      : number;
+    KD      : number;
   };
 
   Programs? : clProgram[];
@@ -72,7 +73,7 @@ class clControllerConfiguration{
  * Class representing current controller status.
  * Reported by controller via WebSocket.
  */
-class clControllerStatus{
+export class clCStatus{
   tProbe        : number = 0;
   tAmbient      : number = 0;
   tStep         : number = 0;
@@ -85,23 +86,90 @@ class clControllerStatus{
 
 class clMsgRequest{
   id    : 'cfgRD' | 'cfgWR' | 'start' | 'stop' = 'cfgRD';
-  msg?  : clControllerConfiguration;
+  msg?  : clCConfiguration;
 }
 
 class clMsgResponse{
-  id      : 'OK' | 'ERR' | 'status' = 'OK';
-  details?: string;
-  config? : clControllerConfiguration;
-  status? : clControllerStatus;
+  id       : 'OK' | 'ERR' | 'status' = 'OK';
+  details? : string;
+  config?  : clCConfiguration;
+  status?  : clCStatus;
 }
 
+/**
+ * Controller
+ */
+export class clController{
+  _cStatus        : clCStatus = new clCStatus();
+  _cConfiguration : clCConfiguration = new clCConfiguration();
+  isWSConnected   : boolean = false;
+
+  public get rStatus() : Ref<clCStatus> {
+    return ref(this._cStatus);
+  }
+  
+  public get rConfiguration() : Ref<clCConfiguration> {
+    return ref(this._cConfiguration);
+  }
+
+  /////////////
+  intervalId : number = 0;
+  static onTimer(obj: clController){
+    obj._cStatus.tProbe++;
+  }
+
+  // handle start/stop commands from GUI
+  onStartStop(){
+    if(this._cStatus.activeProgram === null){
+      this._cStatus.statusText = "no program selected";
+      return;
+    }
+
+    if(this._cStatus.isRunning){
+      clearInterval(this.intervalId);
+    }else{
+      this.intervalId = setInterval( clController.onTimer, 1000, this); 
+    }
+    // toggle running state
+    this._cStatus.isRunning = !this._cStatus.isRunning;
+    this._cStatus.statusText = this._cStatus.isRunning ? "Program is running" : "Program stopped";
+  }
+
+  // handle changes to programs in controller memory
+  GetPrograms() : clProgram[] {
+    return this._cConfiguration.Programs ? this._cConfiguration.Programs : [new clProgram()];
+  }
+
+  SetPrograms(programs: clProgram[]){
+    this._cConfiguration.Programs = programs;
+  }
+  
+}
+
+/**
+ * Create a detached copy of serializable object
+ * @param obj an object to create detached copy
+ * @returns a detached copy of object supplied
+ */
+ export function detach<Type>(obj : Type) : Type{
+  return JSON.parse(JSON.stringify(obj));
+}
+  
 
 
 
 
 
 
-/** represents a set of programs to run that are available in controller memory */
+
+
+
+
+
+/** 
+ * !TESTING ONLY:
+ * represents a set of programs to run that are available in controller memory 
+ */
 var ControllerPrograms = [
   new clProgram('Program1', [
     new clPGMStep(100, 200, 86400),
@@ -115,57 +183,14 @@ var ControllerPrograms = [
   new clProgram('Program3', new clPGMStep(200, 400, 86400))
 ]
 
-/* global state object representing Oven controller state */
-export const Controller = reactive({
-    tempProbe: 300.01,
-    tempAmbient: 27.3,
-    tempTarget: 100,
-    status: "Connecting to controller",
-    isWSConnected: false,
-    isRunning: false,
-    program: null as clProgram | null,
-
-    intervalId: -1,
-
-    onTimer(obj: any){
-      obj.tempProbe++;
-    },
-
-    // handle start/stop commands from GUI
-    onStartStop(){
-      if(this.program === null){
-        this.status = "no program selected";
-        return;
-      }
-
-      if(this.isRunning){
-        clearInterval(this.intervalId);
-      }else{
-        this.intervalId = setInterval( this.onTimer, 1000, this); 
-      }
-      // toggle running state
-      this.isRunning = !this.isRunning;
-      this.status = this.isRunning ? "Program is running" : "Program stopped";
-    },
-
-    // handle changes to programs in controller memory
-    GetPrograms(){
-      return ControllerPrograms;
-    },
-
-    SetPrograms(programs: clProgram[]){
-      ControllerPrograms = programs;
-    }
-  });
 
 
-  /**
-   * Create a detached copy of serializable object
-   * @param obj an object to create detached copy
-   * @returns a detached copy of object supplied
-   */
-export function detach<Type>(obj : Type) : Type{
-  return JSON.parse(JSON.stringify(obj));
-}
+/* Global controller instance */
+export const Controller = reactive(new clController());
+Controller.SetPrograms(ControllerPrograms);
+Controller._cStatus.statusText = "Initializing controller";
 
+/**
+ * Finally mount application
+ */
 createApp(App).mount('#app')
