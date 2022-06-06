@@ -130,7 +130,7 @@ function onStepMove(idx = -1, moveup = true){
 </script>
 
 <template>
-    <div class="tftexp pgmeditor">
+    <div id="scrPGMEditor" class="tftexp pgmeditor">
         <div>
             <label class="lblpgm">Program:
                 <input type="text" :disabled="!inEditMode" v-model="curProgram.Name" />
@@ -164,11 +164,6 @@ function onStepMove(idx = -1, moveup = true){
                 </fieldset>
             </div>
         </div>
-
-
-
-
-        
         <div>
             <button class="edtbtn" @click="onEditSave">{{inEditMode ? "Save" : "Edit"}}</button>
             <button v-if="inEditMode" class="edtbtn" @click="onCancel">Cancel</button>
@@ -179,15 +174,10 @@ function onStepMove(idx = -1, moveup = true){
 
 <style>
 .pgmeditor{
-    color: var(--c-tft-text);
-    background-color: var(--c-tft-bg);
     position: relative;
     width:fit-content;
     justify-self: center;
     padding: 5px;
-    border: none;
-    border-radius: 3px;
-    box-shadow: 3px 3px 3px var(--c-tft-shadow);
 
     display: grid;
     grid-template-columns: 1fr;

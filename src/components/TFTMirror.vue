@@ -2,12 +2,17 @@
 import { Controller } from '../main';
 
 function onPgmSelect() {
-    window.location.hash = '#/sel';
+  window.location.hash = '#/sel';
 }
+
+function onConf() {
+  window.location.hash = '#/conf';
+}
+
 </script>
 
 <template>
-    <div id="tftmirror" class="tft tftmain">
+    <div id="scrTFTMirror" class="tftmirror">
 
       <div id="mainscreen" class="displ">
         <p><span>Program: </span><span>{{Controller._cStatus.activeProgram === null ? "no prog selected" : Controller._cStatus.activeProgram.Name}}</span></p>
@@ -20,13 +25,14 @@ function onPgmSelect() {
       </div>
 
       <div id="buttons" class="btns">
-        <button id="pgm" class="tftbtn tftbtn40px pgm" @click="onPgmSelect">PGM</button>
+        <button id="pgm" class="tftbtn pgm" @click="onPgmSelect">PGM</button>
         <button 
           id="toggle"
-          :class="['tftbtn', 'tftbtn40px', Controller._cStatus.isRunning ? 'started' : 'stopped']"
+          :class="['tftbtn', Controller._cStatus.isRunning ? 'started' : 'stopped']"
           @click="Controller.onStartStop()"
         >{{Controller._cStatus.isRunning ? "Stop" : "Start"}}
         </button>
+        <button id="conf" class="tftbtn tftbtnneutral" @click="onConf">Conf</button>
       </div>
 
       <div id="status" class="stts">
@@ -37,11 +43,6 @@ function onPgmSelect() {
 </template>
 
 <style>
-.tftmain{
-  display: grid;
-  grid-template-columns: 250px 70px;
-}
-
 .displ {
   grid-column: 1;
   min-height: 200px;

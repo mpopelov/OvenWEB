@@ -4,6 +4,7 @@
   --v-c-white: #f8f8f8;
   --v-c-black: #282828;
   --v-c-shadow: rgba(60, 60, 60, 0.7);
+  --v-c-neutral: rgb(61, 131, 125);
 }
 
 /* semantic color variables */
@@ -15,6 +16,7 @@
   --c-tft-bg: var(--v-c-indigo);
   --c-tft-text: var(--v-c-white);
   --c-tft-shadow: var(--v-c-shadow);
+  --c-tft-btnneutral: var(--v-c-neutral);
 }
 
 * {
@@ -42,33 +44,48 @@ body {
 div[id="app"]{
   display: grid;
   grid-template-columns: 1fr 320px 1fr;
-  grid-template-rows: 240px 1fr;
+  grid-template-rows: minmax(240px, auto) 1fr;
   column-gap: 0px;
   row-gap: 10px;
 }
 
-/* Common style for components mirroring TFT display:
+/* Common styles for components imitating TFT display:
   - 320 x 240 pixels
   - indigo background
   - with slightly rounded corners and shadow around
   - placed in specific column of the app container grid: row 1 / col 2
+
+  .tft applies general style and limits width to 320px allowing to grow downwards
+  .tftmirror additionally enforces look and feel of the original display
+  .tftlike 
 */
-.tft{
+.tftmirror,
+.tftlike,
+.tftexp{
+  color: var(--c-tft-text);
+  background-color: var(--c-tft-bg);
+  border: 0px;
+  border-radius: 3px;
+  box-shadow: 3px 3px 3px var(--c-tft-shadow);
+}
+
+.tftmirror,
+.tftlike{
   grid-column: 2;
   grid-row: 1;
   min-width: 320px;
   max-width: 320px;
+  padding: 0px;
+
+  display: grid;
+  grid-template-columns: 250px 70px;
+}
+
+.tftmirror{
   min-height: 240px;
   max-height: 240px;
-  padding: 0px;
-  border: 0px;
-  border-radius: 3px;
-
-  box-shadow: 3px 3px 3px var(--c-tft-shadow);
-
-  background-color: var(--c-tft-bg);
-  color: var(--c-tft-text);
 }
+
 
 /* Common style for components expanding standard tft-mirroring displays:
   - placed on the second row in app grid
@@ -79,22 +96,30 @@ div[id="app"]{
   grid-row: 2;
 }
 
-/* Common style for components representing buttons on a tft display of the controller.
-*/
+
+
+
+/**
+ * Common style for components representing buttons on a tft display of the controller.
+ * 
+ */
 .tftbtn{
   color: var(--c-tft-text);
   font-weight: bold;
   border: none;
   border-radius: 3px;
   text-align: center;
+  width: 70px;
+  height: 50px;
 }
 .tftbtn:active{
   box-shadow: inset 3px 3px 3px var(--c-tft-shadow);
 }
-.tftbtn40px{
-  width: 70px;
-  height: 50px;
+.tftbtnneutral{
+  background-color: var(--c-tft-btnneutral);
 }
+
+
 
 /* common for editing buttons */
 .edtbtn{

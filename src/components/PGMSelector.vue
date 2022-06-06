@@ -157,7 +157,7 @@ function onSaveToController(){
 
 
 <template>
-    <div class="tft tftpgm">
+    <div id="scrPGMSelector" class="tftmirror">
         <div>
           <table class="pgmtbl">
             <thead>
@@ -186,10 +186,10 @@ function onSaveToController(){
           </table>
         </div>
         <div>
-            <button id="btnUp" class="tftbtn tftbtn40px current" @click="onUp">UP</button>
-            <button id="btnOk" class="tftbtn tftbtn40px current" @click="onOk">Set</button>
-            <button id="btnC" class="tftbtn tftbtn40px current" @click="onCancel">X</button>
-            <button id="btnDn" class="tftbtn tftbtn40px current" @click="onDown">DN</button>
+            <button id="btnUp" class="tftbtn tftbtnneutral" @click="onUp">UP</button>
+            <button id="btnOk" class="tftbtn tftbtnneutral" @click="onOk">Set</button>
+            <button id="btnC" class="tftbtn tftbtnneutral" @click="onCancel">X</button>
+            <button id="btnDn" class="tftbtn tftbtnneutral" @click="onDown">DN</button>
         </div>
     </div>
     <PGMEditor v-if="idxSelected != -1"
@@ -205,12 +205,6 @@ function onSaveToController(){
 
 
 <style>
-.tftpgm{
-  display: grid;
-  grid-template-columns: 250px 70px;
-  padding: 0px;
-}
-
 table.pgmtbl{
     width: 250px;
     margin-left: 0px;
@@ -225,13 +219,13 @@ table.pgmtbl td{
     padding: 0px;
 }
 
-.current{
-  background-color: rgb(61, 131, 125);
-}
 .editing{
   background-color: brown;
 }
 .inactive{
   background-color: none;
+}
+.current{
+  background-color: var(--c-tft-btnneutral);
 }
 </style>

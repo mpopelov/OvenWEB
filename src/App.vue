@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, type Component } from 'vue';
 import { Controller } from './main';
 import TFTMirror from './components/TFTMirror.vue';
 import PGMSelector from './components/PGMSelector.vue';
+import Settings from './components/Settings.vue'
 import Problem from './components/Problem.vue';
 
 /* WebSocket instance upfront declaration */
@@ -11,8 +12,9 @@ var WSocket : WebSocket;
 /* simple routing implementation */
 interface Router { [route: string] : Component; }
 const routes : Router = {
-  '/': TFTMirror,
-  '/sel': PGMSelector
+  '/'     : TFTMirror,
+  '/sel'  : PGMSelector,
+  '/conf' : Settings
 }
 
 const currentPath = ref(window.location.hash)

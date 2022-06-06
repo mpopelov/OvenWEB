@@ -48,7 +48,7 @@ export class clProgram{
  * - PID : PID-control coeffitients
  * - Programs : an array of programs available for controller
  */
-class clCConfiguration{
+export class clCConfiguration{
   TFT? : {
     tft1    : number;
     tft2    : number;
@@ -112,7 +112,7 @@ export class clController{
     return ref(this._cConfiguration);
   }
 
-  /////////////
+  // TESTIN ONLY: set timer to update probe temperature
   intervalId : number = 0;
   static onTimer(obj: clController){
     obj._cStatus.tProbe++;
@@ -135,11 +135,22 @@ export class clController{
     this._cStatus.statusText = this._cStatus.isRunning ? "Program is running" : "Program stopped";
   }
 
-  // handle changes to programs in controller memory
+  // get current controller configuration instance
+  GetConfiguration() : clCConfiguration {
+    return this._cConfiguration;
+  }
+
+  // handle changes to configuration in controller memory
+  SetConfiguration(config : clCConfiguration){
+    this._cConfiguration = config;
+  }
+
+  // get programs currently available in controller memory
   GetPrograms() : clProgram[] {
     return this._cConfiguration.Programs ? this._cConfiguration.Programs : [new clProgram()];
   }
 
+  // handle changes to programs in controller memory
   SetPrograms(programs: clProgram[]){
     this._cConfiguration.Programs = programs;
   }
@@ -183,11 +194,25 @@ var ControllerPrograms = [
   new clProgram('Program3', new clPGMStep(200, 400, 86400))
 ]
 
+/**
+ * !TESTING ONLY:
+ * represents a sample configuration in controller memory
+ */
+var ControllerConfiguration = new clCConfiguration();
+ControllerConfiguration.TFT = {tft1 : 1234, tft2 : 5678 };
+ControllerConfiguration.WiFi = { SSID : "TestSSID", KEY : "YourSecret" };
+ControllerConfiguration.PID = {KP : 1.0, KI : 1.1, KD : 1.2 };
+ControllerConfiguration.Programs = ControllerPrograms;
+
 
 
 /* Global controller instance */
 export const Controller = reactive(new clController());
-Controller.SetPrograms(ControllerPrograms);
+
+// set up test configuration
+Controller.SetConfiguration(ControllerConfiguration);
+
+// update controller status text
 Controller._cStatus.statusText = "Initializing controller";
 
 /**
