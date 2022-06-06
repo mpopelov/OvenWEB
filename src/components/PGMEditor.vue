@@ -190,7 +190,7 @@ function onStepMove(idx = -1, moveup = true){
     column-gap: 2px;
     height: min-content;
     border-bottom-style: unset;
-    border-bottom-style: solid;
+    border-bottom-style: dotted;
     border-bottom-width: 1px;
     border-bottom-color: antiquewhite;
     padding: 2px;
@@ -225,6 +225,9 @@ function onStepMove(idx = -1, moveup = true){
     padding-right: 1px;
     padding-bottom: 1px;
     border-radius: 3px;
+}
+.fset > legend{
+    font-weight: bolder;
 }
 
 .alert{

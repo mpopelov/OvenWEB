@@ -25,7 +25,7 @@ function onConf() {
       </div>
 
       <div id="buttons" class="btns">
-        <button id="pgm" class="tftbtn pgm" @click="onPgmSelect">PGM</button>
+        <button id="pgm" class="tftbtn pgm" @click="onPgmSelect">Prog</button>
         <button 
           id="toggle"
           :class="['tftbtn', Controller._cStatus.isRunning ? 'started' : 'stopped']"

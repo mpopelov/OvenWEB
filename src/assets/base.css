@@ -111,6 +111,7 @@ div[id="app"]{
   text-align: center;
   width: 70px;
   height: 50px;
+  margin-bottom: 1px;
 }
 .tftbtn:active{
   box-shadow: inset 3px 3px 3px var(--c-tft-shadow);

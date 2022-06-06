@@ -157,33 +157,21 @@ function onSaveToController(){
 
 
 <template>
-    <div id="scrPGMSelector" class="tftmirror">
+    <div id="scrPGMSelector" class="tftlike">
         <div>
-          <table class="pgmtbl">
-            <thead>
-              <tr>
-                <th colspan="2">Programs:</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
+          <fieldset class="pfset">
+              <legend>Programs ({{Programs.length}}):</legend>
+              <div
                v-for="(item,index) in Programs"
-               :id="`prg${index}`"
                @click="onToggle(index)"
                :class="highlightClass(index)">
-                <td style="width: 95%;"><label>{{index}} - {{item.Name}}</label></td>
-                <td></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2">
-                  <button id="btnAdd" class="edtbtn" @click="onProgramAdd">Add</button>
-                  <button id="btnSave" class="edtbtn" @click="onSaveToController">Save to controller</button>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+               <label>{{index}} - {{item.Name}}</label>
+              </div>
+          </fieldset>
+          <div>
+            <button id="btnAdd" class="edtbtn" @click="onProgramAdd">Add</button>
+            <button id="btnSave" class="edtbtn" @click="onSaveToController">Save to controller</button>
+          </div>
         </div>
         <div>
             <button id="btnUp" class="tftbtn tftbtnneutral" @click="onUp">UP</button>
@@ -192,6 +180,7 @@ function onSaveToController(){
             <button id="btnDn" class="tftbtn tftbtnneutral" @click="onDown">DN</button>
         </div>
     </div>
+
     <PGMEditor v-if="idxSelected != -1"
                :program="curProgram"
                :inEdit="idxSelected == -2"
@@ -205,20 +194,6 @@ function onSaveToController(){
 
 
 <style>
-table.pgmtbl{
-    width: 250px;
-    margin-left: 0px;
-    border-collapse: collapse;
-}
-table.pgmtbl tbody{
-    display: block;
-    overflow: auto;
-    height: 140px;
-}
-table.pgmtbl td{
-    padding: 0px;
-}
-
 .editing{
   background-color: brown;
 }
@@ -227,5 +202,15 @@ table.pgmtbl td{
 }
 .current{
   background-color: var(--c-tft-btnneutral);
+}
+
+.pfset{
+    margin: 5px;
+    border-radius: 3px;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+.pfset > legend{
+    font-weight: bolder;
 }
 </style>

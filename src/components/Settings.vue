@@ -60,7 +60,7 @@ function onConfCancel(){
             <div id="sPrograms" v-if="curConfiguration.Programs">
                 <fieldset class="sfset1">
                     <legend>Available programs ({{curConfiguration.Programs.length}})</legend>
-                    <div v-for="(item,index) in curConfiguration.Programs">{{index}} - {{item.Name}}</div>
+                    <div v-for="(item,index) in curConfiguration.Programs">{{index}} - {{item.Name}} ({{item.steps.length}} steps)</div>
                 </fieldset>
             </div>
 
@@ -82,5 +82,10 @@ function onConfCancel(){
 .sfset2{
     display: grid;
     grid-template-columns: 1fr 1fr;
+}
+
+.sfset1 > legend,
+.sfset2 > legend{
+    font-weight: bolder;
 }
 </style>
