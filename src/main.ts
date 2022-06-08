@@ -50,22 +50,25 @@ export class clProgram{
  */
 export class clCConfiguration{
   TFT? : {
-    tft1    : number;
-    tft2    : number;
+    poll    : number; // TFT polling interval in MS
+    tft1    : number; // TFT calibration data
+    tft2    : number; // TFT calibration data
   };
 
   WiFi? : {
-    SSID    : string;
-    KEY     : string;
+    SSID    : string; // WiFi network SSID
+    KEY     : string; // pre-shared key to access the network
+    IP?     : string; // currently assigned IP address
   };
 
   PID? : {
-    KP      : number;
-    KI      : number;
-    KD      : number;
+    poll    : number; // PID control polling interval - defaults to 1 sec
+    KP      : number; // PID control Proportional coeffitient
+    KI      : number; // PID control Integral coeffitient
+    KD      : number; // PID control Differential coeffitient
   };
 
-  Programs? : clProgram[];
+  Programs? : clProgram[]; // list of currently available programs to execute
 
 }
 
@@ -199,9 +202,9 @@ var ControllerPrograms = [
  * represents a sample configuration in controller memory
  */
 var ControllerConfiguration = new clCConfiguration();
-ControllerConfiguration.TFT = {tft1 : 1234, tft2 : 5678 };
-ControllerConfiguration.WiFi = { SSID : "TestSSID", KEY : "YourSecret" };
-ControllerConfiguration.PID = {KP : 1.0, KI : 1.1, KD : 1.2 };
+ControllerConfiguration.TFT = {poll : 300, tft1 : 1234, tft2 : 5678 };
+ControllerConfiguration.WiFi = { SSID : "TestSSID", KEY : "YourSecret", IP : "192.168.1.2" };
+ControllerConfiguration.PID = {poll: 1000, KP : 1.0, KI : 1.1, KD : 1.2 };
 ControllerConfiguration.Programs = ControllerPrograms;
 
 
