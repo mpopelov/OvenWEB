@@ -53,6 +53,7 @@ export class clCConfiguration{
     poll    : number; // TFT polling interval in MS
     tft1    : number; // TFT calibration data
     tft2    : number; // TFT calibration data
+    tft3    : number; // TFT calibration data
   };
 
   WiFi? : {
@@ -202,7 +203,7 @@ var ControllerPrograms = [
  * represents a sample configuration in controller memory
  */
 var ControllerConfiguration = new clCConfiguration();
-ControllerConfiguration.TFT = {poll : 300, tft1 : 1234, tft2 : 5678 };
+ControllerConfiguration.TFT = {poll : 300, tft1 : 1234, tft2 : 5678, tft3 : 91011 };
 ControllerConfiguration.WiFi = { SSID : "TestSSID", KEY : "YourSecret", IP : "192.168.1.2" };
 ControllerConfiguration.PID = {poll: 1000, KP : 1.0, KI : 1.1, KD : 1.2 };
 ControllerConfiguration.Programs = ControllerPrograms;
