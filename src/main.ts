@@ -92,7 +92,7 @@ class clMsgRequest{
 }
 
 class clMsgResponse{
-  id       : 'OK' | 'ERR' | 'status' = 'OK';
+  id       : 'OK' | 'ERR' | 'STS' = 'OK';
   details? : string;
   config?  : clCConfiguration;
   status?  : clCStatus;
