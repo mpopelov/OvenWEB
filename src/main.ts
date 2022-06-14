@@ -76,14 +76,16 @@ export class clCConfiguration{
  * Reported by controller via WebSocket.
  */
 export class clCStatus{
-  tProbe        : number = 0;
-  tAmbient      : number = 0;
-  tStep         : number = 0;
-  isRunning     : boolean = false;
-  statusText    : string = "";
-  activeProgram : clProgram | null = null;
-  activeStep    : number = 0;
-  timeElapsed   : number = 0;
+  tPB       : number = 0;
+  tAM       : number = 0;
+  tSP       : number = 0;
+  U         : number = 0;
+  isRunning : boolean = false;
+  isRelayOn : boolean = false;
+  stsText   : string = "";
+  actPgm    : clProgram | null = null;
+  actStep   : number = 0;
+  tmElapsed : number = 0;
 }
 
 class clMsgRequest{
@@ -117,13 +119,13 @@ export class clController{
   // TESTIN ONLY: set timer to update probe temperature
   intervalId : number = 0;
   static onTimer(obj: clController){
-    obj._cStatus.tProbe++;
+    obj._cStatus.tPB++;
   }
 
   // handle start/stop commands from GUI
   onStartStop(){
-    if(this._cStatus.activeProgram === null){
-      this._cStatus.statusText = "no program selected";
+    if(this._cStatus.actPgm === null){
+      this._cStatus.stsText = "no program selected";
       return;
     }
 
@@ -134,7 +136,7 @@ export class clController{
     }
     // toggle running state
     this._cStatus.isRunning = !this._cStatus.isRunning;
-    this._cStatus.statusText = this._cStatus.isRunning ? "Program is running" : "Program stopped";
+    this._cStatus.stsText = this._cStatus.isRunning ? "Program is running" : "Program stopped";
   }
 
   // get current controller configuration instance
@@ -215,7 +217,7 @@ export const Controller = reactive(new clController());
 Controller.SetConfiguration(ControllerConfiguration);
 
 // update controller status text
-Controller._cStatus.statusText = "Initializing controller";
+Controller._cStatus.stsText = "Initializing controller";
 
 /**
  * Finally mount application

@@ -28,13 +28,13 @@ onMounted(() => {
 
   WSocket.onerror = event => {
     console.log("onWSError: ", event);
-    Controller._cStatus.statusText = "WSError: " + event;
+    Controller._cStatus.stsText = "WSError: " + event;
   };
 
   WSocket.onclose = event => {
     console.log("onWSClosed: ", event);
     Controller.isWSConnected = false;
-    Controller._cStatus.statusText = "Connection closed: clean=" + event.wasClean + ", code=" + event.code + ", reason: " + event.reason;
+    Controller._cStatus.stsText = "Connection closed: clean=" + event.wasClean + ", code=" + event.code + ", reason: " + event.reason;
   };
 
   WSocket.onopen = event => {
@@ -44,7 +44,7 @@ onMounted(() => {
 
   WSocket.onmessage = event => {
     console.log("onWSMessage: ", event);
-    Controller._cStatus.statusText = event.data;
+    Controller._cStatus.stsText = event.data;
   };
 });
 

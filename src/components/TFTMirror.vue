@@ -15,13 +15,13 @@ function onConf() {
     <div id="scrTFTMirror" class="tftmirror">
 
       <div id="mainscreen" class="displ">
-        <p><span>Program: </span><span>{{Controller._cStatus.activeProgram === null ? "no prog selected" : Controller._cStatus.activeProgram.Name}}</span></p>
+        <p><span>Program: </span><span>{{Controller._cStatus.actPgm === null ? "no prog selected" : Controller._cStatus.actPgm.Name}}</span></p>
         <p>
             <span>Step: </span>
             <span>--</span>
             <span> of </span>
-            <span>{{Controller._cStatus.activeProgram === null ? "--" : Controller._cStatus.activeProgram.steps.length}}</span></p>
-        <p><span>{{Controller._cStatus.tProbe}} &deg;C</span></p>
+            <span>{{Controller._cStatus.actPgm === null ? "--" : Controller._cStatus.actPgm.steps.length}}</span></p>
+        <p><span>{{Controller._cStatus.tPB}} &deg;C</span></p>
       </div>
 
       <div id="buttons" class="btns">
@@ -36,7 +36,7 @@ function onConf() {
       </div>
 
       <div id="status" class="stts">
-        <p id="status">{{Controller._cStatus.statusText}}</p>
+        <p id="status">{{Controller._cStatus.stsText}}</p>
       </div>
 
     </div>

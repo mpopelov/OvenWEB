@@ -69,13 +69,13 @@ function onOk(){
     }
     /* set new program only in case a valid index was selected */
     if(idxSelected.value < 0){
-        Controller._cStatus.activeProgram = null;
+        Controller._cStatus.actPgm = null;
         Controller._cStatus.isRunning = false;
-        Controller._cStatus.statusText = "Active program reset.";
+        Controller._cStatus.stsText = "Active program reset.";
     }else{
         /* populate controller with the disconnected copy of selected program */
-        Controller._cStatus.activeProgram = detach(Programs.value[idxSelected.value]);
-        Controller._cStatus.statusText = "Selected program idx=" + idxSelected.value;
+        Controller._cStatus.actPgm = detach(Programs.value[idxSelected.value]);
+        Controller._cStatus.stsText = "Selected program idx=" + idxSelected.value;
     }
 
     /* navigate back to the main screen */
@@ -89,7 +89,7 @@ function onCancel(){
         return;
     }
     /* update status text */
-    Controller._cStatus.statusText = "program selection cancelled";
+    Controller._cStatus.stsText = "program selection cancelled";
     /* navigate back to the main screen discarding any changes */
     window.location.hash = '#/';
 }
