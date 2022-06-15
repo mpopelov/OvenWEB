@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type Component } from 'vue';
-import { Controller } from './main';
+import { Controller, clMsgRequest, clMsgResponse } from './main';
 import TFTMirror from './components/TFTMirror.vue';
 import PGMSelector from './components/PGMSelector.vue';
 import Settings from './components/Settings.vue'
@@ -44,7 +44,32 @@ onMounted(() => {
 
   WSocket.onmessage = event => {
     console.log("onWSMessage: ", event);
-    Controller._cStatus.stsText = event.data;
+    let msg = JSON.parse(event.data) as clMsgResponse;
+    if(msg && msg.id){
+      switch(msg.id){
+        case "STS": {
+          // update status upon regular message from controller
+          if(msg.status){
+            Controller._cStatus = msg.status;
+          }else{
+            console.log("received message does not contain status object!");
+            Controller._cStatus.stsText = "Message from controller with errors!!!";
+          }
+          break;
+        }
+        case "ERR": {
+          // handle error
+          console.log("received error message");
+          Controller._cStatus.stsText = msg.details ? msg.details : "ERROR: no details provided!"
+          break;
+        }
+        case "OK": {
+          // handle ok
+          console.log("received confirmation message");
+          Controller._cStatus.stsText = msg.details ? msg.details : "OK: no details provided!"
+        }
+      }
+    }
   };
 });
 

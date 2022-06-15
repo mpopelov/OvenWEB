@@ -88,13 +88,13 @@ export class clCStatus{
   tmElapsed : number = 0;
 }
 
-class clMsgRequest{
+export class clMsgRequest{
   id    : 'cfgRD' | 'cfgWR' | 'start' | 'stop' = 'cfgRD';
   msg?  : clCConfiguration;
 }
 
-class clMsgResponse{
-  id       : 'OK' | 'ERR' | 'STS' = 'OK';
+export class clMsgResponse{
+  id?       : 'OK' | 'ERR' | 'STS' = 'OK';
   details? : string;
   config?  : clCConfiguration;
   status?  : clCStatus;
