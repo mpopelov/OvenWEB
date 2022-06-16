@@ -3,7 +3,7 @@
  * Component to manage general controller settings
  */
 import { ref } from 'vue';
-import { Controller, detach } from '../main';
+import { Controller, detach, clProgram } from '../main';
 
 
 var curConfiguration = ref(detach(Controller.GetConfiguration()));
@@ -20,6 +20,16 @@ function onConfCancel(){
     window.location.hash = '#/';
 }
 
+function programDuration(pgm : clProgram) : String {
+    let duration = 0;
+    for(const step of pgm.steps){
+        duration += step.duration;
+    }
+    return String(Math.floor(duration/3600000)) + "h : " 
+           + String( Math.floor(((Math.floor(duration/1000))%3600)/60) ) + "m : "
+           + String( ((Math.floor(duration/1000))%3600)%60 ) + "s";
+}
+
 </script>
 
 
@@ -32,9 +42,9 @@ function onConfCancel(){
                 <fieldset class="sfset2">
                     <legend>WiFi settings</legend>
                     <label for="iSSID">SSID:</label>
-                    <input id="iSSID" type="text" v-model="curConfiguration.WiFi.SSID" />
+                    <input id="iSSID" type="text" maxlength="32" v-model="curConfiguration.WiFi.SSID" />
                     <label for="iKEY">KEY:</label>
-                    <input id="iKEY" type="text" v-model="curConfiguration.WiFi.KEY" />
+                    <input id="iKEY" type="text" maxlength="64" v-model="curConfiguration.WiFi.KEY" />
                 </fieldset>
             </div>
 
@@ -51,16 +61,18 @@ function onConfCancel(){
             </div>
 
             <div id="sTFT" v-if="curConfiguration.TFT">
-                <fieldset class="sfset1">
+                <fieldset class="sfset2">
                     <legend>TFT touchscreen data</legend>
-                    {{curConfiguration.TFT}}
+                    <label for="iTFTPoll">poll:</label>
+                    <input id="iTFTPoll" type="number" v-model="curConfiguration.TFT.poll" />
+                    <div>data:</div> <div>{{curConfiguration.TFT.TFT}}</div>
                 </fieldset>
             </div>
 
             <div id="sPrograms" v-if="curConfiguration.Programs">
                 <fieldset class="sfset1">
                     <legend>Available programs ({{curConfiguration.Programs.length}})</legend>
-                    <div v-for="(item,index) in curConfiguration.Programs">{{index}} - {{item.Name}} ({{item.steps.length}} steps)</div>
+                    <div v-for="(item,index) in curConfiguration.Programs">{{index}} - {{item.Name}} ({{item.steps.length}} steps, {{programDuration(item)}})</div>
                 </fieldset>
             </div>
 
