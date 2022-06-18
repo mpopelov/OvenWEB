@@ -129,14 +129,14 @@ export class clController{
       return;
     }
 
-    if(this._cStatus.isRunning){
+    /*if(this._cStatus.isRunning){
       clearInterval(this.intervalId);
     }else{
       this.intervalId = setInterval( clController.onTimer, 1000, this); 
     }
     // toggle running state
     this._cStatus.isRunning = !this._cStatus.isRunning;
-    this._cStatus.stsText = this._cStatus.isRunning ? "Program is running" : "Program stopped";
+    this._cStatus.stsText = this._cStatus.isRunning ? "Program is running" : "Program stopped";*/
   }
 
   // get current controller configuration instance
