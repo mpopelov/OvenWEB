@@ -32,7 +32,7 @@ function Duration(ms : number) : String {
           <span>{{Controller._cStatus.actPgm === null ? "--" : Controller._cStatus.actPgm.steps.length}}</span>
         </div>
         <div style="min-height: 110px; display: flex; align-items: center;">
-          <span style="font-size:xx-large; text-align: center; vertical-align: middle;">{{Controller._cStatus.tPB}} &deg;C</span>
+          <span style="font-size:xxx-large; text-align: center; vertical-align: middle;">{{ Controller._cStatus.tPB.toFixed(1) }} &deg;C</span>
         </div>
         <div>
           <span>Step time: </span>
