@@ -108,14 +108,6 @@ export class clController{
   _cConfiguration : clCConfiguration = new clCConfiguration();
   isWSConnected   : boolean = false;
 
-  public get rStatus() : Ref<clCStatus> {
-    return ref(this._cStatus);
-  }
-  
-  public get rConfiguration() : Ref<clCConfiguration> {
-    return ref(this._cConfiguration);
-  }
-
   // TESTIN ONLY: set timer to update probe temperature
   intervalId : number = 0;
   static onTimer(obj: clController){
@@ -128,15 +120,6 @@ export class clController{
       this._cStatus.stsText = "no program selected";
       return;
     }
-
-    /*if(this._cStatus.isRunning){
-      clearInterval(this.intervalId);
-    }else{
-      this.intervalId = setInterval( clController.onTimer, 1000, this); 
-    }
-    // toggle running state
-    this._cStatus.isRunning = !this._cStatus.isRunning;
-    this._cStatus.stsText = this._cStatus.isRunning ? "Program is running" : "Program stopped";*/
   }
 
   // get current controller configuration instance
