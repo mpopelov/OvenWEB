@@ -1,5 +1,4 @@
-import { createApp, reactive, ref } from 'vue'
-import type { Ref } from 'vue'
+import { createApp, reactive } from 'vue'
 import App from './App.vue'
 
 /**
@@ -100,6 +99,8 @@ export class clMsgResponse{
   status?  : clCStatus;
 }
 
+var WSocket : WebSocket | null = null;
+
 /**
  * Controller
  */
@@ -120,6 +121,17 @@ export class clController{
       this._cStatus.stsText = "no program selected";
       return;
     }
+
+    // send start or stop command over websocket
+    let cmd = new clMsgRequest();
+    if(this._cStatus.isRunning){
+      // send stop command
+      cmd.id = "stop";
+    }else{
+      // send start command
+      cmd.id = "start";
+    }
+    if( WSocket && WSocket.readyState == WebSocket.OPEN) WSocket.send(JSON.stringify(cmd));
   }
 
   // get current controller configuration instance
@@ -140,6 +152,11 @@ export class clController{
   // handle changes to programs in controller memory
   SetPrograms(programs: clProgram[]){
     this._cConfiguration.Programs = programs;
+  }
+
+  Connect(host : string) : WebSocket {
+    if(WSocket === null) WSocket = new WebSocket("ws://" + host + "/ws");
+    return WSocket;
   }
   
 }
@@ -202,7 +219,10 @@ Controller.SetConfiguration(ControllerConfiguration);
 // update controller status text
 Controller._cStatus.stsText = "Initializing controller";
 
+// provide websocket to downstream components
+
 /**
  * Finally mount application
  */
-createApp(App).mount('#app')
+const appInstance = createApp(App);
+appInstance.mount('#app');

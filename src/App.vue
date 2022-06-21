@@ -24,7 +24,8 @@ const currentView = computed(() => { return routes[currentPath.value.slice(1) ||
 /* prepare WebSocket to communicate with controller once application is mounted */
 onMounted(() => {
   /* try to establish connection and initialize event handlers */
-  WSocket = new WebSocket("ws://" + window.location.host + "/ws");
+  //WSocket = new WebSocket("ws://" + window.location.host + "/ws");
+  WSocket = Controller.Connect(window.location.host);
 
   WSocket.onerror = event => {
     console.log("onWSError: ", event);
@@ -40,6 +41,9 @@ onMounted(() => {
   WSocket.onopen = event => {
     console.log("onWSOpen: ", event);
     Controller.isWSConnected = true;
+    let msg = new clMsgRequest();
+    msg.id = "cfgRD"
+    WSocket.send(JSON.stringify(msg));
   };
 
   WSocket.onmessage = event => {
