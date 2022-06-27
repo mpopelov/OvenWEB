@@ -152,6 +152,12 @@ export class clController{
   // handle changes to programs in controller memory
   SetPrograms(programs: clProgram[]){
     this._cConfiguration.Programs = programs;
+
+    // send programs to controller
+    let cmd = new clMsgRequest();
+    cmd.id = "cfgWR";
+    cmd.msg = this._cConfiguration;
+    if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
   }
 
   // set up WebSocket connection and bind call-backs
@@ -219,6 +225,11 @@ export class clController{
               // handle ok
               console.log("received confirmation message");
               this._cStatus.stsText = msg.details ? msg.details : "OK: no details provided!"
+
+              // check if a valid configuration was sent in response
+              if(msg.config){
+                this._cConfiguration = msg.config;
+              }
             }
           }
         }
