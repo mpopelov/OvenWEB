@@ -65,14 +65,17 @@ function programDuration(pgm : clProgram) : String {
                     <legend>TFT touchscreen data</legend>
                     <label for="iTFTPoll">poll:</label>
                     <input id="iTFTPoll" type="number" v-model="curConfiguration.TFT.poll" />
-                    <div>data:</div> <div>{{curConfiguration.TFT.TFT}}</div>
+                    <div>data:</div> <div style="font-size:smaller">{{curConfiguration.TFT.TFT}}</div>
                 </fieldset>
             </div>
 
             <div id="sPrograms" v-if="curConfiguration.Programs">
                 <fieldset class="sfset1">
                     <legend>Available programs ({{curConfiguration.Programs.length}})</legend>
-                    <div v-for="(item,index) in curConfiguration.Programs">{{index}} - {{item.Name}} ({{item.steps.length}} steps, {{programDuration(item)}})</div>
+                    <div v-for="(item,index) in curConfiguration.Programs">
+                        <div>{{index}} - {{item.Name}}</div>
+                        <div style="font-size:smaller">({{item.steps.length}} steps, {{programDuration(item)}})</div>
+                    </div>
                 </fieldset>
             </div>
 

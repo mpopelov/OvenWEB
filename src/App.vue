@@ -6,9 +6,6 @@ import PGMSelector from './components/PGMSelector.vue';
 import Settings from './components/Settings.vue'
 import Problem from './components/Problem.vue';
 
-/* WebSocket instance upfront declaration */
-var WSocket : WebSocket;
-
 /* simple routing implementation */
 interface Router { [route: string] : Component; }
 const routes : Router = {
@@ -23,63 +20,12 @@ const currentView = computed(() => { return routes[currentPath.value.slice(1) ||
 
 /* prepare WebSocket to communicate with controller once application is mounted */
 onMounted(() => {
-  /* try to establish connection and initialize event handlers */
-  //WSocket = new WebSocket("ws://" + window.location.host + "/ws");
-  WSocket = Controller.Connect(window.location.host);
-
-  WSocket.onerror = event => {
-    console.log("onWSError: ", event);
-    Controller._cStatus.stsText = "WSError: " + event;
-  };
-
-  WSocket.onclose = event => {
-    console.log("onWSClosed: ", event);
-    Controller.isWSConnected = false;
-    Controller._cStatus.stsText = "Connection closed: clean=" + event.wasClean + ", code=" + event.code + ", reason: " + event.reason;
-  };
-
-  WSocket.onopen = event => {
-    console.log("onWSOpen: ", event);
-    Controller.isWSConnected = true;
-    let msg = new clMsgRequest();
-    msg.id = "cfgRD"
-    WSocket.send(JSON.stringify(msg));
-  };
-
-  WSocket.onmessage = event => {
-    console.log("onWSMessage: ", event);
-    let msg = JSON.parse(event.data) as clMsgResponse;
-    if(msg && msg.id){
-      switch(msg.id){
-        case "STS": {
-          // update status upon regular message from controller
-          if(msg.status){
-            Controller._cStatus = msg.status;
-          }else{
-            console.log("received message does not contain status object!");
-            Controller._cStatus.stsText = "Message from controller with errors!!!";
-          }
-          break;
-        }
-        case "ERR": {
-          // handle error
-          console.log("received error message");
-          Controller._cStatus.stsText = msg.details ? msg.details : "ERROR: no details provided!"
-          break;
-        }
-        case "OK": {
-          // handle ok
-          console.log("received confirmation message");
-          Controller._cStatus.stsText = msg.details ? msg.details : "OK: no details provided!"
-        }
-      }
-    }
-  };
+  Controller.Connect(window.location.host);
 });
 
 /* close connection once unmounted */
 onUnmounted(() => {
-  WSocket.close();
+  Controller.Disconnect();
 });
 
 </script>

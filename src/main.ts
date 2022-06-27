@@ -99,8 +99,6 @@ export class clMsgResponse{
   status?  : clCStatus;
 }
 
-var WSocket : WebSocket | null = null;
-
 /**
  * Controller
  */
@@ -108,6 +106,8 @@ export class clController{
   _cStatus        : clCStatus = new clCStatus();
   _cConfiguration : clCConfiguration = new clCConfiguration();
   isWSConnected   : boolean = false;
+  WSocket         : WebSocket | null = null;
+  host            : string = "";
 
   // TESTIN ONLY: set timer to update probe temperature
   intervalId : number = 0;
@@ -116,7 +116,7 @@ export class clController{
   }
 
   // handle start/stop commands from GUI
-  onStartStop(){
+  onStartStop() {
     if(this._cStatus.actPgm === null){
       this._cStatus.stsText = "no program selected";
       return;
@@ -131,7 +131,7 @@ export class clController{
       // send start command
       cmd.id = "start";
     }
-    if( WSocket && WSocket.readyState == WebSocket.OPEN) WSocket.send(JSON.stringify(cmd));
+    if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
   }
 
   // get current controller configuration instance
@@ -154,9 +154,90 @@ export class clController{
     this._cConfiguration.Programs = programs;
   }
 
-  Connect(host : string) : WebSocket {
-    if(WSocket === null) WSocket = new WebSocket("ws://" + host + "/ws");
-    return WSocket;
+  // set up WebSocket connection and bind call-backs
+  Connect(host : string) {
+
+    // save host information
+    this.host = host;
+
+    if(this.WSocket === null) {
+      this.WSocket = new WebSocket("ws://" + host + "/ws");
+
+      // on Error
+      this.WSocket.onerror = event => {
+        console.log("onWSError: ", event);
+        //Controller._cStatus.stsText = "WSError: " + event;
+        this._cStatus.stsText = "WSError: " + event;
+      };
+
+      // on Open
+      this.WSocket.onopen = event => {
+        console.log("onWSOpen: ", event);
+        this.isWSConnected = true;
+
+        // request configuration from controller upon connecting
+        let msg = new clMsgRequest();
+        msg.id = "cfgRD"
+        this.WSocket?.send(JSON.stringify(msg));
+      };
+
+      // on Close
+      this.WSocket.onclose = event => {
+        console.log("onWSClosed: ", event);
+        this.isWSConnected = false;
+        this._cStatus.stsText = "Connection closed: clean=" + event.wasClean + ", code=" + event.code + ", reason: " + event.reason;
+        
+        // reinstantiate connection
+        this.WSocket = null;
+        this.isWSConnected = false;
+        this.Connect(this.host);
+      };
+
+      // on Message
+      this.WSocket.onmessage = event => {
+        console.log("onWSMessage: ", event);
+        let msg = JSON.parse(event.data) as clMsgResponse;
+        if(msg && msg.id){
+          switch(msg.id){
+            case "STS": {
+              // update status upon regular message from controller
+              if(msg.status){
+                this._cStatus = msg.status;
+              }else{
+                console.log("received message does not contain status object!");
+                this._cStatus.stsText = "Message from controller with errors!!!";
+              }
+              break;
+            }
+            case "ERR": {
+              // handle error
+              console.log("received error message");
+              this._cStatus.stsText = msg.details ? msg.details : "ERROR: no details provided!"
+              break;
+            }
+            case "OK": {
+              // handle ok
+              console.log("received confirmation message");
+              this._cStatus.stsText = msg.details ? msg.details : "OK: no details provided!"
+            }
+          }
+        }
+      };
+
+    }
+
+  } // end Connect()
+
+  // disconnect WebSocket
+  Disconnect() {
+    console.log("Closing connection to controller");
+    if(this.WSocket != null){
+      // remove onclose event so that we are not in an infinite loop
+      this.WSocket.onclose = null;
+      this.WSocket.close();
+    }
+    this.isWSConnected = false;
+    this.WSocket = null;
   }
   
 }
@@ -218,8 +299,6 @@ Controller.SetConfiguration(ControllerConfiguration);
 
 // update controller status text
 Controller._cStatus.stsText = "Initializing controller";
-
-// provide websocket to downstream components
 
 /**
  * Finally mount application
