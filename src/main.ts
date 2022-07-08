@@ -88,8 +88,8 @@ export class clCStatus{
 }
 
 export class clMsgRequest{
-  id    : 'cfgRD' | 'cfgWR' | 'start' | 'stop' = 'cfgRD';
-  msg?  : clCConfiguration;
+  id    : 'setPG' | 'cfgRD' | 'cfgWR' | 'cfgSV' | 'start' | 'stop' = 'cfgRD';
+  msg?  : clCConfiguration | string;
 }
 
 export class clMsgResponse{
@@ -157,6 +157,21 @@ export class clController{
     let cmd = new clMsgRequest();
     cmd.id = "cfgWR";
     cmd.msg = this._cConfiguration;
+    if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
+  }
+
+  // send select active program command
+  SetActiveProgram(name : string) {
+    let cmd = new clMsgRequest();
+    cmd.id = "setPG";
+    cmd.msg = name;
+    if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
+  }
+
+  // tell controller to save running configuration to flash memory
+  SaveConfiguration() {
+    let cmd = new clMsgRequest();
+    cmd.id = "cfgSV";
     if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
   }
 

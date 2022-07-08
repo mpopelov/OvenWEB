@@ -68,15 +68,19 @@ function onOk(){
         return;
     }
     /* set new program only in case a valid index was selected */
-    if(idxSelected.value < 0){
+    if(idxSelected.value >= 0){
+        // send command to controller
+        Controller.SetActiveProgram(Programs.value[idxSelected.value].Name);
+    }
+    /* if(idxSelected.value < 0){
         Controller._cStatus.actPgm = null;
         Controller._cStatus.isRunning = false;
         Controller._cStatus.stsText = "Active program reset.";
     }else{
-        /* populate controller with the disconnected copy of selected program */
+        // populate controller with the disconnected copy of selected program
         Controller._cStatus.actPgm = detach(Programs.value[idxSelected.value]);
         Controller._cStatus.stsText = "Selected program idx=" + idxSelected.value;
-    }
+    } */
 
     /* navigate back to the main screen */
     window.location.hash = '#/';
