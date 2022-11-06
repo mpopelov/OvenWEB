@@ -56,6 +56,17 @@ const curProgram = computed( () => {
     return props.program;
     } )
 
+
+/**
+ * Translate time span duration in ms into a human friendly form with hours/minutes/seconds
+ * @param span time span to present in humanreadable form
+ */
+function translateDuration(span : number) : String {
+    return String(Math.floor(span/3600000)) + "h : " 
+           + String( Math.floor(((Math.floor(span/1000))%3600)/60) ) + "m : "
+           + String( ((Math.floor(span/1000))%3600)%60 ) + "s";
+}
+
 /**
  * Enter editing mode or save changes done.
  */
@@ -151,6 +162,7 @@ function onStepMove(idx = -1, moveup = true){
                 <fieldset class="fset">
                     <legend>duration</legend>
                     <input type="number" :disabled="!inEditMode" v-model.number="step.duration" />
+                    <div>{{translateDuration(step.duration)}}</div>
                 </fieldset>
             </div>
             <div class="pgmactions">

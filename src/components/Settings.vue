@@ -7,6 +7,7 @@ import { Controller, detach, clProgram } from '../main';
 
 
 var curConfiguration = ref(detach(Controller.GetConfiguration()));
+var curPrograms = ref(detach(Controller.GetPrograms()));
 
 function onConfSave(){
     // save configuration to controller memory
@@ -51,12 +52,16 @@ function programDuration(pgm : clProgram) : String {
             <div id="sPID" v-if="curConfiguration.PID">
                 <fieldset class="sfset2">
                     <legend>PID parameters</legend>
+                    <label for="iPIDPoll">poll:</label>
+                    <input id="iPIDPoll" type="number" v-model="curConfiguration.PID.poll" />
                     <label for="iK_p">K_p:</label>
                     <input id="iK_p" type="number" v-model="curConfiguration.PID.KP" />
                     <label for="iK_i">K_i:</label>
                     <input id="iK_i" type="number" v-model="curConfiguration.PID.KI" />
                     <label for="iK_d">K_d:</label>
                     <input id="iK_d" type="number" v-model="curConfiguration.PID.KD" />
+                    <label for="iTOL">K_d:</label>
+                    <input id="iTOL" type="number" v-model="curConfiguration.PID.TOL" />
                 </fieldset>
             </div>
 
@@ -69,10 +74,10 @@ function programDuration(pgm : clProgram) : String {
                 </fieldset>
             </div>
 
-            <div id="sPrograms" v-if="curConfiguration.Programs">
+            <div id="sPrograms" v-if="curPrograms">
                 <fieldset class="sfset1">
-                    <legend>Available programs ({{curConfiguration.Programs.length}})</legend>
-                    <div v-for="(item,index) in curConfiguration.Programs">
+                    <legend>Available programs ({{curPrograms.length}})</legend>
+                    <div v-for="(item,index) in curPrograms">
                         <div>{{index}} - {{item.Name}}</div>
                         <div style="font-size:smaller">({{item.steps.length}} steps, {{programDuration(item)}})</div>
                     </div>

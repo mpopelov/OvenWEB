@@ -64,10 +64,8 @@ export class clCConfiguration{
     KP      : number; // PID control Proportional coeffitient
     KI      : number; // PID control Integral coeffitient
     KD      : number; // PID control Differential coeffitient
+    TOL     : number; // PID control temperature measurement tolerance
   };
-
-  Programs? : clProgram[]; // list of currently available programs to execute
-
 }
 
 /**
@@ -88,8 +86,8 @@ export class clCStatus{
 }
 
 export class clMsgRequest{
-  id    : 'setPG' | 'cfgRD' | 'cfgWR' | 'cfgSV' | 'start' | 'stop' = 'cfgRD';
-  msg?  : clCConfiguration | string;
+  id    : 'setPG' | 'cfgRD' | 'cfgWR' | 'cfgSV' | 'pgmRD' | 'pgmWR' | 'pgmSV' | 'start' | 'stop' = 'cfgRD';
+  msg?  : clCConfiguration | clProgram[] | string;
 }
 
 export class clMsgResponse{
@@ -97,6 +95,7 @@ export class clMsgResponse{
   details? : string;
   config?  : clCConfiguration;
   status?  : clCStatus;
+  programs? : clProgram[];
 }
 
 /**
@@ -105,6 +104,7 @@ export class clMsgResponse{
 export class clController{
   _cStatus        : clCStatus = new clCStatus();
   _cConfiguration : clCConfiguration = new clCConfiguration();
+  _cPrograms      : clProgram[] = []; // list of currently available programs to execute
   isWSConnected   : boolean = false;
   WSocket         : WebSocket | null = null;
   host            : string = "";
@@ -142,21 +142,27 @@ export class clController{
   // handle changes to configuration in controller memory
   SetConfiguration(config : clCConfiguration){
     this._cConfiguration = config;
-  }
-
-  // get programs currently available in controller memory
-  GetPrograms() : clProgram[] {
-    return this._cConfiguration.Programs ? this._cConfiguration.Programs : [new clProgram()];
-  }
-
-  // handle changes to programs in controller memory
-  SetPrograms(programs: clProgram[]){
-    this._cConfiguration.Programs = programs;
 
     // send programs to controller
     let cmd = new clMsgRequest();
     cmd.id = "cfgWR";
     cmd.msg = this._cConfiguration;
+    if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
+  }
+
+  // get programs currently available in controller memory
+  GetPrograms() : clProgram[] {
+    return this._cPrograms;
+  }
+
+  // handle changes to programs in controller memory
+  SetPrograms(programs: clProgram[]){
+    this._cPrograms = programs;
+
+    // send programs to controller
+    let cmd = new clMsgRequest();
+    cmd.id = "pgmWR";
+    cmd.msg = this._cPrograms;
     if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
   }
 
@@ -172,6 +178,13 @@ export class clController{
   SaveConfiguration() {
     let cmd = new clMsgRequest();
     cmd.id = "cfgSV";
+    if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
+  }
+
+  // tell controller to save programs to flash memory
+  SavePrograms() {
+    let cmd = new clMsgRequest();
+    cmd.id = "pgmSV";
     if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
   }
 
@@ -197,9 +210,9 @@ export class clController{
         this.isWSConnected = true;
 
         // request configuration from controller upon connecting
-        let msg = new clMsgRequest();
-        msg.id = "cfgRD"
-        this.WSocket?.send(JSON.stringify(msg));
+        let cmd = new clMsgRequest();
+        cmd.id = "cfgRD"
+        this.WSocket?.send(JSON.stringify(cmd));
       };
 
       // on Close
@@ -244,6 +257,16 @@ export class clController{
               // check if a valid configuration was sent in response
               if(msg.config){
                 this._cConfiguration = msg.config;
+
+                // upon receiving configuration - request programs as well
+                let cmd = new clMsgRequest();
+                cmd.id = "pgmRD";
+                if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
+              }
+
+              // check if a valid programs array was supplied
+              if(msg.programs){
+                this._cPrograms = msg.programs;
               }
             }
           }
@@ -312,8 +335,7 @@ var ControllerPrograms = [
 var ControllerConfiguration = new clCConfiguration();
 ControllerConfiguration.TFT = {poll : 300, TFT : [1234, 5678, 91011] };
 ControllerConfiguration.WiFi = { SSID : "TestSSID", KEY : "YourSecret", IP : "192.168.1.2" };
-ControllerConfiguration.PID = {poll: 1000, KP : 1.0, KI : 1.1, KD : 1.2 };
-ControllerConfiguration.Programs = ControllerPrograms;
+ControllerConfiguration.PID = {poll: 1000, KP : 1.0, KI : 1.1, KD : 1.2, TOL : 1.3 };
 
 
 
@@ -322,6 +344,9 @@ export const Controller = reactive(new clController());
 
 // set up test configuration
 Controller.SetConfiguration(ControllerConfiguration);
+
+// set up test programs
+Controller._cPrograms = ControllerPrograms;
 
 // update controller status text
 Controller._cStatus.stsText = "Initializing controller";
