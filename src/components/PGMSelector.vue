@@ -144,7 +144,7 @@ function onProgramAdd(){
     inEditMode.value = true;
 }
 
-function onSaveToController(){
+function onSendToController(){
     // check taht we are not in edit mode / new program
     if(inEditMode.value){
         window.alert(msgSaveChanges);
@@ -154,6 +154,16 @@ function onSaveToController(){
     Controller.SetPrograms(Programs.value);
     // get a disconnected copy of programs to be able to edit safely
     Programs.value = detach(Controller.GetPrograms());
+}
+
+function onSaveToFlash(){
+    // check if editing was done and changes have to be sent to controller first
+    if(inEditMode.value){
+        window.alert(msgSaveChanges);
+        return;
+    }
+    // tell controller to save programs to flash memory permanently
+    Controller.SavePrograms();
 }
 
 </script>
@@ -174,7 +184,8 @@ function onSaveToController(){
           </fieldset>
           <div>
             <button id="btnAdd" class="edtbtn" @click="onProgramAdd">Add</button>
-            <button id="btnSave" class="edtbtn" @click="onSaveToController">Save to controller</button>
+            <button id="btnSend" class="edtbtn" @click="onSendToController">Send to controller</button>
+            <button id="btnSave" class="edtbtn" @click="onSaveToFlash">Write to memory</button>
           </div>
         </div>
         <div>

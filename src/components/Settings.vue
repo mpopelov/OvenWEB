@@ -9,9 +9,15 @@ import { Controller, detach, clProgram } from '../main';
 var curConfiguration = ref(detach(Controller.GetConfiguration()));
 var curPrograms = ref(detach(Controller.GetPrograms()));
 
-function onConfSave(){
-    // save configuration to controller memory
+function onConfSet(){
+    // send configuration to controller memory
     Controller.SetConfiguration(curConfiguration.value);
+}
+
+function onConfSave(){
+    // tell controller to write configuration to flash
+    //Controller.SetConfiguration(curConfiguration.value);
+    Controller.SaveConfiguration();
     // navigate back to the main screen
     window.location.hash = '#/';
 }
@@ -88,6 +94,7 @@ function programDuration(pgm : clProgram) : String {
         <div id="buttons">
             <button id="OK" class="tftbtn tftbtnneutral" @click="onConfSave">OK</button>
             <button id="Cancel" class="tftbtn tftbtnneutral" @click="onConfCancel">Cancel</button>
+            <button id="Set" class="tftbtn tftbtnneutral" @click="onConfSet">Send to controller</button>
         </div>
     </div>
 </template>

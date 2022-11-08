@@ -163,6 +163,7 @@ export class clController{
     let cmd = new clMsgRequest();
     cmd.id = "pgmWR";
     cmd.msg = this._cPrograms;
+    console.log(cmd);
     if( this.WSocket && this.WSocket.readyState == WebSocket.OPEN) this.WSocket.send(JSON.stringify(cmd));
   }
 
@@ -229,7 +230,7 @@ export class clController{
 
       // on Message
       this.WSocket.onmessage = event => {
-        console.log("onWSMessage: ", event);
+        //console.log("onWSMessage: ", event);
         let msg = JSON.parse(event.data) as clMsgResponse;
         if(msg && msg.id){
           switch(msg.id){
